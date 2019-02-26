@@ -1,0 +1,31 @@
+CC = g++
+
+INCLUDE = -Iinclude
+LIBRARY = -Llib
+FLAG = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+PARTY = $(INCLUDE) $(LIBRARY) $(FLAG)
+
+OBJ = obj\Text.o obj\Loader.o obj\Sprite.o obj\Scene.o obj\GameEngine.o
+
+build:
+	$(CC) main.cpp $(OBJ) $(PARTY) -o bin\Game.exe
+
+run:
+	bin\Game.exe
+
+clean:
+	del bin\Game.exe
+
+core:
+	$(CC) -c src\Text.cpp $(PARTY) -o obj\Text.o
+	$(CC) -c src\Loader.cpp $(PARTY) -o obj\Loader.o
+	$(CC) -c src\Sprite.cpp $(PARTY) -o obj\Sprite.o
+	$(CC) -c src\Scene.cpp $(PARTY) -o obj\Scene.o
+	$(CC) -c src\GameEngine.cpp $(PARTY) -o obj\GameEngine.o
+
+clean_core:
+	del /q obj\*
+
+all: clean_core clean core build
+full: all run
+clean_all: clean_core clean
