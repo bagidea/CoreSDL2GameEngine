@@ -25,9 +25,7 @@ Sprite::Sprite(Loader* loader)
 
 Sprite::~Sprite()
 {
-	/*if(texture != NULL)
-		SDL_DestroyTexture(texture);
-	texture = NULL;*/
+	CleanUp();
 }
 
 int Sprite::Init(SDL_Renderer* renderer)
@@ -239,3 +237,4 @@ void Sprite::KeyboardEvent(int key_event, int key_code){}
 void Sprite::MouseEvent(int mouse_event){}
 void Sprite::Start(){}
 void Sprite::Update(){}
+void Sprite::CleanUp(){}

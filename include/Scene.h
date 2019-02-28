@@ -36,4 +36,5 @@ private:
 	std::vector<Text*> texts;
 	virtual void Start();
 	virtual void Update();
+	virtual void CleanUp();
 };

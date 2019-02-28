@@ -22,6 +22,7 @@ GameEngine::GameEngine(const char* title, int screen_width, int screen_height)
 
 GameEngine::~GameEngine()
 {
+	CleanUp();
 	if(scene != NULL)
 		delete scene;
 	scene = NULL;
@@ -30,6 +31,7 @@ GameEngine::~GameEngine()
 	window = NULL;
 	IMG_Quit();
 	TTF_Quit();
+	Mix_Quit();
 	SDL_Quit();
 }
 
@@ -55,6 +57,11 @@ int GameEngine::Init()
 	if(TTF_Init() < 0)
 	{
 		std::cout << "SDL_ttf could not initialize! : error - " << TTF_GetError() << std::endl;
+		return -1;
+	}
+	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 204) < 0)
+	{
+		std::cout << "SDL_mixer could not initialze! : error - " << Mix_GetError() << std::endl;
 		return -1;
 	}
 	Start();
@@ -118,3 +125,4 @@ void GameEngine::KeyboardEvent(int key_event, int key_code){}
 void GameEngine::MouseEvent(int mouse_event){}
 void GameEngine::Start(){}
 void GameEngine::Update(){}
+void GameEngine::CleanUp(){}

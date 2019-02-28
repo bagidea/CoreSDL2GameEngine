@@ -9,6 +9,7 @@ Scene::Scene()
 
 Scene::~Scene()
 {
+	CleanUp();
 	if(renderer != NULL)
 		SDL_DestroyRenderer(renderer);
 	renderer = NULL;
@@ -101,8 +102,11 @@ void Scene::Render()
 		for(Text* txt : texts)
 		{
 			RawSprite rawTxt = txt->GetRawSprite();
-			SDL_Rect render = {rawTxt.render.x-cameraX, rawTxt.render.y-cameraY, rawTxt.render.w, rawTxt.render.h};
-			SDL_RenderCopyEx(renderer, rawTxt.texture, &rawTxt.clip, &render, rawTxt.rotation, &rawTxt.pivot, rawTxt.flip);
+			if(rawTxt.texture != NULL)
+			{
+				SDL_Rect render = {rawTxt.render.x-cameraX, rawTxt.render.y-cameraY, rawTxt.render.w, rawTxt.render.h};
+				SDL_RenderCopyEx(renderer, rawTxt.texture, &rawTxt.clip, &render, rawTxt.rotation, &rawTxt.pivot, rawTxt.flip);
+			}
 		}
 		SDL_RenderPresent(renderer);
 	}
@@ -143,3 +147,4 @@ void Scene::KeyboardEvent(int key_event, int key_code){}
 void Scene::MouseEvent(int mouse_event){}
 void Scene::Start(){}
 void Scene::Update(){}
+void Scene::CleanUp(){}

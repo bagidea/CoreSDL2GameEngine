@@ -1,5 +1,6 @@
 ﻿#include "Text.h"
 
+Text::Text() : Text(""){}
 Text::Text(std::string text = "")
 {
 	x = y = align = valign = 0;
@@ -113,22 +114,27 @@ RawSprite Text::GetRawSprite()
 	}
 	if(texture == NULL || text != text_temp || (color.r != color_temp.r, color.g != color_temp.g, color.b != color_temp.b) || font_update)
 	{
-		SDL_Color new_color = {Uint8(color.r), Uint8(color.g), Uint8(color.b)};
-		SDL_Surface* img = TTF_RenderUTF8_Solid(font, text.c_str(), new_color);
-		if(img == NULL)
-			std::cout << "Render TTF fail! error - " << TTF_GetError() << std::endl;
-		CleanTexture();
-		texture = SDL_CreateTextureFromSurface(renderer, img);
-		if(texture == NULL)
-			std::cout << "Create texture TTF failed! error - " << SDL_GetError() << std::endl;
-		SDL_Rect new_clip = {0, 0, img->w, img->h};
-		clip = new_clip;
-		SDL_Rect new_render = {x-pivotX+((align == TEXT_ALIGN_LEFT)?0:(align == TEXT_ALIGN_RIGHT)?-img->w:-(img->w/2)), y-pivotY+((valign == TEXT_VALIGN_TOP)?0:(valign == TEXT_VALIGN_BOTTOM)?-img->h:-(img->h/2)), img->w, img->h};
-		render = new_render;
-		color_temp = color;
-		text_temp = text;
-		SDL_FreeSurface(img);
-		img = NULL;
+		if(text.size() > 0)
+		{
+			SDL_Color new_color = {Uint8(color.r), Uint8(color.g), Uint8(color.b)};
+			SDL_Surface* img = TTF_RenderUTF8_Solid(font, text.c_str(), new_color);
+			if(img == NULL)
+				std::cout << "Render TTF fail! error - " << TTF_GetError() << std::endl;
+			CleanTexture();
+			texture = SDL_CreateTextureFromSurface(renderer, img);
+			if(texture == NULL)
+				std::cout << "Create texture TTF failed! error - " << SDL_GetError() << std::endl;
+			SDL_Rect new_clip = {0, 0, img->w, img->h};
+			clip = new_clip;
+			SDL_Rect new_render = {x-pivotX+((align == TEXT_ALIGN_LEFT)?0:(align == TEXT_ALIGN_RIGHT)?-img->w:-(img->w/2)), y-pivotY+((valign == TEXT_VALIGN_TOP)?0:(valign == TEXT_VALIGN_BOTTOM)?-img->h:-(img->h/2)), img->w, img->h};
+			render = new_render;
+			color_temp = color;
+			text_temp = text;
+			SDL_FreeSurface(img);
+			img = NULL;
+		}else{
+			CleanTexture();
+		}
 	}
 	return RawSprite(texture, clip, render, pivot, rotation, SDL_FLIP_NONE);
 }

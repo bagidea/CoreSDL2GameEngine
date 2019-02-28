@@ -17,6 +17,7 @@
 class Text
 {
 public:
+	Text();
 	Text(std::string text);
 	~Text();
 	void Init(SDL_Renderer* renderer);

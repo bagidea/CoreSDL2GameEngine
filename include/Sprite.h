@@ -65,4 +65,5 @@ private:
 	std::map<std::string, int> tagsMode;
 	virtual void Start();
 	virtual void Update();
+	virtual void CleanUp();
 };
