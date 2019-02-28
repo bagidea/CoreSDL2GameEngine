@@ -33,4 +33,5 @@ if you using linux bash on windows. you can run <b>make_setup.sh</b></br></br>
 <b>Facebook</b></br>
 - https://www.facebook.com/bagideastudio</br>
 - https://www.facebook.com/SamsungBagIdea</br>
+<b>Youtube</b></br>
 - https://www.youtube.com/bagidea</br>
