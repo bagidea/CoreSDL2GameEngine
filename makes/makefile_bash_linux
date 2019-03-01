@@ -16,7 +16,8 @@ run:
 clean:
 	rm -rf bin/Game.exe
 
-core:
+core: clean_core
+	mkdir obj
 	$(CC) -c src/Audio.cpp $(PARTY) -o obj/Audio.o
 	$(CC) -c src/Text.cpp $(PARTY) -o obj/Text.o
 	$(CC) -c src/Loader.cpp $(PARTY) -o obj/Loader.o
@@ -25,7 +26,7 @@ core:
 	$(CC) -c src/GameEngine.cpp $(PARTY) -o obj/GameEngine.o
 
 clean_core:
-	rm -rf obj/*
+	rm -rf obj
 
 all: clean_core clean core build
 full: all run
