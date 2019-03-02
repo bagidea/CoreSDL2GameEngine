@@ -1,5 +1,6 @@
 # CoreSDL2GameEngine
-Example Basic Core Game Engine made with c++ SDL2
+Example Core Game Engine made with SDL2</h4>
+C/C++ based on SDL
 <h2>Overview</h2>
 <h4>Game Engine</h4>
 - Window</br>
