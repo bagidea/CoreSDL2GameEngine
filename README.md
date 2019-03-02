@@ -2,12 +2,13 @@
 Example Basic Core Game Engine made with c++ SDL2
 <h2>Overview</h2>
 <h4>Game Engine</h4>
-- Create Window</br>
-- Create Game Scene</br>
-- Create Sprite</br>
-- Sprite Animation</br>
-- Add Text into Game</br>
-- Open Audio</br>
+- Game Window</br>
+- Game Scene</br>
+- Sprite</br>
+- Sprite Crop image</br>
+- Sprite Create spritesheet - Animation</br>
+- Create Text (UTF-8)</br>
+- Audio</br>
 <h2>Build Dependencies</h2>
 <h4>Windows</h4>
 c++ - MinGW (http://www.mingw.org)
