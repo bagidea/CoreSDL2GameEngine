@@ -1,13 +1,13 @@
 #include "Sprite.h"
 
-Sprite::Sprite(Loader* loader)
+Sprite::Sprite(Texture* loader)
 {
 	x = y = pivotX = pivotY = rotation = frame = 0;
 	fps = 24;
 	isPlay = false;
 	texture = NULL;
 	path = loader->GetPath();
-	img = (Loader::loaders[path] == NULL)?loader->GetImage():NULL;
+	img = (Texture::loaders[path] == NULL)?loader->GetImage():NULL;
 	if(img == NULL)
 	{
 		std::cout << "Unable to load image! : error - " << IMG_GetError() << std::endl;
@@ -18,8 +18,8 @@ Sprite::Sprite(Loader* loader)
 		SDL_Rect clip = {0, 0, img_width, img_height};
 		clips.push_back(clip);
 		std::vector<int> new_tag = {0};
-		tags["default"] = new_tag;
-		tagsMode["default"] = TAG_MODE_ONCE;
+		tags[tag] = new_tag;
+		tagsMode[tag] = TAG_MODE_ONCE;
 	}
 }
 
@@ -34,7 +34,7 @@ int Sprite::Init(SDL_Renderer* renderer)
 	{
 		if(texture == NULL)
 		{
-			if(Loader::loaders[path] == NULL)
+			if(Texture::loaders[path] == NULL)
 			{
 				texture = SDL_CreateTextureFromSurface(renderer, img);
 				if(texture == NULL)
@@ -42,8 +42,9 @@ int Sprite::Init(SDL_Renderer* renderer)
 					std::cout << "Unable to create texture! : error - " << SDL_GetError() << std::endl;
 					return -1;
 				}
+				Texture::loaders[path] = texture;
 			}else{
-				texture = Loader::loaders[path];
+				texture = Texture::loaders[path];
 			}
 		}
 	}else{

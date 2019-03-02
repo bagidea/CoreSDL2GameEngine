@@ -1,13 +1,13 @@
 ﻿#include "Text.h"
 
-Text::Text() : Text(""){}
-Text::Text(std::string text = "")
+Text::Text()
 {
-	x = y = align = valign = 0;
-	font_path = font_path_temp = "fonts/arial.ttf";
-	size = size_temp = 25;
-	color = color_temp = COLOR_BLACK;
-	this->text = text_temp = text;
+	init("");
+}
+
+Text::Text(std::string text)
+{
+	init(text);
 }
 
 Text::~Text()
@@ -137,6 +137,17 @@ RawSprite Text::GetRawSprite()
 		}
 	}
 	return RawSprite(texture, clip, render, pivot, rotation, SDL_FLIP_NONE);
+}
+
+void Text::init(std::string text)
+{
+	x = y = pivotX = pivotY = rotation = align = valign = 0;
+	font_path = font_path_temp = "fonts/arial.ttf";
+	size = size_temp = 25;
+	color = color_temp = COLOR_BLACK;
+	this->text = text_temp = text;
+	font = NULL;
+	texture = NULL;
 }
 
 void Text::CleanFont()

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SPRITE_HEADER
+#define SPRITE_HEADER
 
 #define TAG_MODE_ONCE 0
 #define TAG_MODE_LOOP 1
@@ -9,7 +10,7 @@
 #include <cstdlib>
 #include <SDL2/SDL.h>
 #include "KeyboardAndMouse.h"
-#include "Loader.h"
+#include "Texture.h"
 
 struct RawSprite
 {
@@ -24,7 +25,7 @@ struct RawSprite
 class Sprite
 {
 public:
-	Sprite(Loader* loader);
+	Sprite(Texture* loader);
 	~Sprite();
 	int Init(SDL_Renderer* renderer);
 	void CreateSpriteSheet(int num_x, int num_y);
@@ -67,3 +68,5 @@ private:
 	virtual void Update();
 	virtual void CleanUp();
 };
+
+#endif

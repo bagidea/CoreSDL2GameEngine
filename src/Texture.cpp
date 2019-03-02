@@ -1,8 +1,8 @@
-#include "Loader.h"
+#include "Texture.h"
 
-Loader::Loader(const char* path)
+Texture::Texture(const char* path)
 {
-	if(Loader::loaders[path] == NULL)
+	if(Texture::loaders[path] == NULL)
 	{
 		img = IMG_Load(path);
 		if(img == NULL)
@@ -11,26 +11,26 @@ Loader::Loader(const char* path)
 	this->path = path;
 }
 
-Loader::~Loader()
+Texture::~Texture()
 {
 	if(img != NULL)
 		SDL_FreeSurface(img);
 	img = NULL;
-	if(Loader::loaders[path] != NULL)
+	if(Texture::loaders[path] != NULL)
 	{
-		SDL_DestroyTexture(Loader::loaders[path]);
-		Loader::loaders.erase(path);
+		SDL_DestroyTexture(Texture::loaders[path]);
+		Texture::loaders.erase(path);
 	}
 }
 
-SDL_Surface* Loader::GetImage()
+SDL_Surface* Texture::GetImage()
 {
 	if(img != NULL)
 		return img;
 	return NULL;
 }
 
-std::string Loader::GetPath()
+std::string Texture::GetPath()
 {
 	return path;
 }

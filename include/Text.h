@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TEXT_HEADER
+#define TEXT_HEADER
 
 #include <iostream>
 #include <string>
@@ -46,6 +47,9 @@ private:
 	TTF_Font* font;
 	SDL_Texture* texture;
 	SDL_Rect clip, render;
+	void init(std::string text);
 	void CleanFont();
 	void CleanTexture();
 };
+
+#endif

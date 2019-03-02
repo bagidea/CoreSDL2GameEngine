@@ -16,7 +16,6 @@ public:
 	static int ScreenHeight;
 	GameEngine(const char* title, int screen_width, int screen_height);
 	~GameEngine();
-	int Init();
 	void Run();
 	void SetScene(Scene* scene);
 	int GetScreenWidth();
@@ -30,6 +29,7 @@ private:
 	bool isQuit;
 	SDL_Event e;
 	Scene* scene;
+	int init();
 	virtual void Start();
 	virtual void Update();
 	virtual void CleanUp();
