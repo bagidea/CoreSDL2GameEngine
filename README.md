@@ -27,7 +27,7 @@ if you using linux bash on windows. you can run <b>make_setup.sh</b></br></br>
 <b>make all</b> - Build all source code</br>
 <b>make core</b> - Build Core Game engine</br>
 <b>make clean_core</b> - Clean Core Game engine</br>
-<b>make</b> - Build Game <b>[</b> After make core <b>]</b></br>
+<b>make</b> - Build Game <b>[</b> after make core <b>]</b></br>
 <b>make clean</b> - Clean Game</br>
 <h4>Run</h4>
 <b>make run</b> - Start Game</br>
