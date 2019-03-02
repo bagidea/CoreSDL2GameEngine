@@ -31,7 +31,7 @@ if you using linux bash on windows. you can run <b>make_setup.sh</b></br></br>
 <b>make clean</b> - Clean Game</br>
 <h4>Run</h4>
 <b>make run</b> - Start Game</br>
-<h2>Who Am I?</h2>
+<h2>Contact</h2>
 <h4>BagIdea Co.,Ltd.</h4>
 <b>Facebook</b></br>
 - https://www.facebook.com/bagideastudio</br>
