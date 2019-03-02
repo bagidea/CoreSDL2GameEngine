@@ -55,6 +55,21 @@ int Sprite::Init(SDL_Renderer* renderer)
 	return 0;
 }
 
+void Sprite::CropImage(int x, int y, int width, int height)
+{
+	this->width = width;
+	this->height = height;
+	tag = "default";
+	SDL_Rect clip = {x, y, width, height};
+	clips.clear();
+	clips.push_back(clip);
+	tags.clear();
+	std::vector<int> new_tag = {0};
+	tags[tag] = new_tag;
+	tagsMode.clear();
+	tagsMode[tag] = TAG_MODE_ONCE;
+}
+
 void Sprite::CreateSpriteSheet(int num_x, int num_y)
 {
 	if(img != NULL)

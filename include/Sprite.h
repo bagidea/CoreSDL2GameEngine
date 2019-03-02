@@ -28,6 +28,7 @@ public:
 	Sprite(Texture* loader);
 	~Sprite();
 	int Init(SDL_Renderer* renderer);
+	void CropImage(int x, int y, int width, int height);
 	void CreateSpriteSheet(int num_x, int num_y);
 	void SetFPS(unsigned int fps);
 	unsigned int GetFPS();
