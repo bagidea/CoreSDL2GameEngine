@@ -35,6 +35,7 @@ GameEngine::~GameEngine()
 
 void GameEngine::Run()
 {
+	Start();
 	while(!isQuit)
 	{
 		while(SDL_PollEvent(&e))
@@ -119,7 +120,6 @@ int GameEngine::init()
 		std::cout << "SDL_mixer could not initialze! : error - " << Mix_GetError() << std::endl;
 		return -1;
 	}
-	Start();
 	return 0;
 }
 
