@@ -7,26 +7,31 @@ Sprite::Sprite(Texture* loader)
 	isPlay = false;
 	texture = NULL;
 	path = loader->GetPath();
-	img = (Texture::loaders[path] == NULL)?loader->GetImage():NULL;
+	img = loader->GetImage();
 	if(img == NULL)
 	{
-		std::cout << "Unable to load image! : error - " << IMG_GetError() << std::endl;
+		if(Texture::loaders[path] == NULL)
+			std::cout << "Sprite load Texture image! : error - " << IMG_GetError() << std::endl;
+		else
+		{
+			int w, h;
+			SDL_QueryTexture(Texture::loaders[path], NULL, NULL, &w, &h);
+			img_width = width = w;
+			img_height = height = h;
+		}
 	}else{
 		img_width = width = img->w;
 		img_height = height = img->h;
-		tag = "default";
-		SDL_Rect clip = {0, 0, img_width, img_height};
-		clips.push_back(clip);
-		std::vector<int> new_tag = {0};
-		tags[tag] = new_tag;
-		tagsMode[tag] = TAG_MODE_ONCE;
 	}
+	tag = "default";
+	SDL_Rect clip = {0, 0, img_width, img_height};
+	clips.push_back(clip);
+	std::vector<int> new_tag = {0};
+	tags[tag] = new_tag;
+	tagsMode[tag] = TAG_MODE_ONCE;
 }
 
-Sprite::~Sprite()
-{
-	CleanUp();
-}
+Sprite::~Sprite(){}
 
 int Sprite::Init(SDL_Renderer* renderer)
 {
@@ -48,8 +53,13 @@ int Sprite::Init(SDL_Renderer* renderer)
 			}
 		}
 	}else{
-		std::cout << "Null! image!" << std::endl;
-		return -1;
+		if(Texture::loaders[path] == NULL)
+		{
+			std::cout << "Null! image!" << std::endl;
+			return -1;
+		}else{
+			texture = Texture::loaders[path];
+		}
 	}
 	Start();
 	return 0;
@@ -253,4 +263,3 @@ void Sprite::KeyboardEvent(int key_event, int key_code){}
 void Sprite::MouseEvent(int mouse_event){}
 void Sprite::Start(){}
 void Sprite::Update(){}
-void Sprite::CleanUp(){}

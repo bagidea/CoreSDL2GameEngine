@@ -6,8 +6,7 @@ class Game : public GameEngine
 {
 public:
 	Game(const char* title);
-	//Clean all after end game
-	void Clean();
+	~Game();
 	//Keyboard Event function
 	void KeyboardEvent(int key_event, int key_code);
 	//Mouse Event function
@@ -17,6 +16,8 @@ private:
 	void Start();
 	//Function Update is realtime working
 	void Update();
+	//Clean all after end game
+	void Clean();
 	//Define Scene class
 	Scene* scene;
 	Text* howto_txt;
@@ -34,19 +35,7 @@ private:
 
 //Create Game : GameEngine
 Game::Game(const char* title) : GameEngine(title, 800, 600){}
-
-//Clean all after end game
-void Game::Clean()
-{
-	delete bgAudio;
-	delete hit;
-	delete hit2;
-	delete howto_txt;
-	delete mousepos_txt;
-	delete logo;
-	delete logo_tex;
-	delete scene;
-}
+Game::~Game(){Clean();}
 
 //Keyboard Event function
 void Game::KeyboardEvent(int key_event, int key_code)
@@ -132,6 +121,19 @@ void Game::Update()
 	logo->SetPosition(newX, newY);
 }
 
+//Clean all after end game
+void Game::Clean()
+{
+	delete bgAudio;
+	delete hit;
+	delete hit2;
+	delete howto_txt;
+	delete mousepos_txt;
+	delete logo;
+	delete logo_tex;
+	delete scene;
+}
+
 int main(int argc, char* argv[])
 {
 	//Create Game
@@ -139,9 +141,6 @@ int main(int argc, char* argv[])
 
 	//Run Game
 	game->Run();
-
-	//Clean all
-	game->Clean();
 
 	//Delete Game class
 	delete game;

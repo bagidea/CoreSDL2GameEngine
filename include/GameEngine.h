@@ -32,5 +32,4 @@ private:
 	int init();
 	virtual void Start();
 	virtual void Update();
-	virtual void CleanUp();
 };

@@ -7,6 +7,8 @@ Texture::Texture(const char* path)
 		img = IMG_Load(path);
 		if(img == NULL)
 			std::cout << "Unable to load image! : error - " << IMG_GetError() << std::endl;
+	}else{
+		img = NULL;
 	}
 	this->path = path;
 }

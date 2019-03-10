@@ -11,7 +11,7 @@
 class Scene
 {
 public:
-	static Scene* current;
+	static Scene* Current;
 	Scene();
 	~Scene();
 	int Init(SDL_Window* window);
@@ -36,5 +36,4 @@ private:
 	std::vector<Text*> texts;
 	virtual void Start();
 	virtual void Update();
-	virtual void CleanUp();
 };

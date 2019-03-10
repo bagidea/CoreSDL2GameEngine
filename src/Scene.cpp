@@ -9,7 +9,6 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-	CleanUp();
 	if(renderer != NULL)
 		SDL_DestroyRenderer(renderer);
 	renderer = NULL;
@@ -147,4 +146,3 @@ void Scene::KeyboardEvent(int key_event, int key_code){}
 void Scene::MouseEvent(int mouse_event){}
 void Scene::Start(){}
 void Scene::Update(){}
-void Scene::CleanUp(){}

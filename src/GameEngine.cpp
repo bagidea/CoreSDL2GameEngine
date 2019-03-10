@@ -2,7 +2,7 @@
 
 int GameEngine::ScreenWidth = 0;
 int GameEngine::ScreenHeight = 0;
-Scene* Scene::current = NULL;
+Scene* Scene::Current = NULL;
 std::map<std::string, SDL_Texture*> Texture::loaders;
 int Mouse::mouseX = 0;
 int Mouse::mouseY = 0;
@@ -23,7 +23,6 @@ GameEngine::GameEngine(const char* title, int screen_width, int screen_height)
 
 GameEngine::~GameEngine()
 {
-	CleanUp();
 	if(window != NULL)
 		SDL_DestroyWindow(window);
 	window = NULL;
@@ -74,7 +73,7 @@ void GameEngine::Run()
 
 void GameEngine::SetScene(Scene* scene)
 {
-	Scene::current = this->scene = scene;
+	Scene::Current = this->scene = scene;
 	this->scene->Init(window);
 }
 
@@ -125,4 +124,3 @@ int GameEngine::init()
 
 void GameEngine::Start(){}
 void GameEngine::Update(){}
-void GameEngine::CleanUp(){}
