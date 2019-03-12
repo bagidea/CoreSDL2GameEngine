@@ -5,6 +5,7 @@
 #define TAG_MODE_LOOP 1
 
 #include <iostream>
+#include <memory>
 #include <vector>
 #include <map>
 #include <cstdlib>
@@ -25,7 +26,7 @@ struct RawSprite
 class Sprite
 {
 public:
-	Sprite(Texture* loader);
+	Sprite(std::shared_ptr<Texture> loader);
 	~Sprite();
 	int Init(SDL_Renderer* renderer);
 	void CropImage(int x, int y, int width, int height);

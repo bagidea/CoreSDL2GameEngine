@@ -32,24 +32,25 @@ bool MapCollision::Check(int x, int y)
 class GameAsset
 {
 public:
-	static Texture* Effect1;
-	static Texture* Effect2;
+	static std::shared_ptr<Texture> Effect1;
+	static std::shared_ptr<Texture> Effect2;
 };
 
-Texture* GameAsset::Effect1 = NULL;
-Texture* GameAsset::Effect2 = NULL;
+std::shared_ptr<Texture> GameAsset::Effect1 = nullptr;
+std::shared_ptr<Texture> GameAsset::Effect2 = nullptr;
 
-class Effect : public Sprite
+class Effect :  public Sprite,
+		public std::enable_shared_from_this<Sprite>
 {
 public:
-	Effect(Texture* texture, int c, int r, int start, int end);
+	Effect(std::shared_ptr<Texture> texture, int c, int r, int start, int end);
 private:
 	void Start();
 	void Update();
 	int c, r, start, end;
 };
 
-Effect::Effect(Texture* texture, int c, int r, int start, int end) : Sprite(texture)
+Effect::Effect(std::shared_ptr<Texture> texture, int c, int r, int start, int end) : Sprite(texture)
 {
 	this->c = c;
 	this->r = r;
@@ -68,23 +69,21 @@ void Effect::Start()
 void Effect::Update()
 {
 	if(IsTag() == "Eff" && !IsPlay())
-	{
-		Scene::Current->RemoveChild(this);
-		delete this;
-	}
+		Scene::Current->RemoveChild(shared_from_this());
 }
 
-class Kunai : public Sprite
+class Kunai :   public Sprite,
+		public std::enable_shared_from_this<Sprite>
 {
 public:
-	Kunai(Texture* texture, int dirX);
+	Kunai(std::shared_ptr<Texture> texture, int dirX);
 private:
 	void Start();
 	void Update();
 	int dirX, speed;
 };
 
-Kunai::Kunai(Texture* texture, int dirX) : Sprite(texture){this->dirX = dirX;}
+Kunai::Kunai(std::shared_ptr<Texture> texture, int dirX) : Sprite(texture){this->dirX = dirX;}
 
 void Kunai::Start()
 {
@@ -99,33 +98,29 @@ void Kunai::Update()
 	SetPosition(GetX()+(speed*dirX), GetY());
 	if(!MapCollision::Check(GetX()/128, GetY()/128) || GetX() < 0 || GetX() > 20*128)
 	{
-		Effect* eff = new Effect(GameAsset::Effect1, 5, 2, 1, 8);
+		std::shared_ptr<Effect> eff(new Effect(GameAsset::Effect1, 5, 2, 1, 8));
 		eff->SetFPS(30);
 		eff->SetPosition(GetX(), GetY());
 		Scene::Current->AddChild(eff);
-		Scene::Current->RemoveChild(this);
-		delete this;
+		Scene::Current->RemoveChild(shared_from_this());
 	}
 }
 
 class Player : public Sprite
 {
 public:
-	Player(Texture* texture);
-	~Player();
+	Player(std::shared_ptr<Texture> texture);
 	void KeyboardEvent(int key_event, int key_code);
 private:
 	void Start();
 	void Update();
-	void Clean();
 	bool _left, _right, _jump, jump, _attack, attack, _shoot, shoot;
 	int speed, gravity;
 	int speedY;
-	Texture* kunai_tex;
+	std::shared_ptr<Texture> kunai_tex;
 };
 
-Player::Player(Texture* texture) : Sprite(texture){}
-Player::~Player(){Clean();}
+Player::Player(std::shared_ptr<Texture> texture) : Sprite(texture){}
 
 void Player::KeyboardEvent(int key_event, int key_code)
 {
@@ -165,7 +160,7 @@ void Player::Start()
 	speedY = 0;
 	gravity = 1;
 	CreateSpriteSheet(10, 6);
-	SetPivot(GetWidth()/2, GetHeight());
+	SetPivot(GetWidth()/2, GetHeight()-1);
 	SetPosition(128, 8*128);
 	AddTag("Idle", 1, 10, TAG_MODE_LOOP);
 	AddTag("Run", 11, 20, TAG_MODE_LOOP);
@@ -174,7 +169,7 @@ void Player::Start()
 	AddTag("Shoot", 41, 50, TAG_MODE_ONCE);
 	AddTag("Dead", 51, 60, TAG_MODE_ONCE);
 	GotoAndPlay("Idle");
-	kunai_tex = new Texture("images/Kunai.png");
+	kunai_tex = std::shared_ptr<Texture>(new Texture("images/Kunai.png"));
 }
 
 void Player::Update()
@@ -219,7 +214,7 @@ void Player::Update()
 	{
 		if(IsTag() != "Shoot")
 			GotoAndPlay("Shoot");
-		Kunai* k = new Kunai(kunai_tex, ((GetWidth() > 0)?1:-1));
+		std::shared_ptr<Kunai> k(new Kunai(kunai_tex, ((GetWidth() > 0)?1:-1)));
 		k->SetPosition(GetX(), GetY()-40);
 		Scene::Current->AddChild(k);
 		shoot = true;
@@ -249,9 +244,31 @@ void Player::Update()
 	}
 }
 
-void Player::Clean()
+class Zombie : public Sprite
 {
-	delete kunai_tex;
+public:
+	Zombie(std::shared_ptr<Texture> texture);
+private:
+	void Start();
+	void Update();
+};
+
+Zombie::Zombie(std::shared_ptr<Texture> texture) : Sprite(texture){}
+
+void Zombie::Start()
+{
+	CreateSpriteSheet(10, 4);
+	SetPivot(GetWidth()/2, GetHeight()-1);
+	SetPosition(512, 8*128);
+	AddTag("Idle", 1, 10, TAG_MODE_LOOP);
+	AddTag("Run", 11, 20, TAG_MODE_LOOP);
+	AddTag("Attack", 21, 28, TAG_MODE_ONCE);
+	AddTag("Dead", 31, 40, TAG_MODE_ONCE);
+	GotoAndPlay("Idle");
+}
+
+void Zombie::Update()
+{
 }
 
 class Level : public Scene
@@ -263,19 +280,21 @@ private:
 	void Start();
 	void Update();
 	void Clean();
-	Texture* bg_tex;
-	Texture* bg_cloud_tex;
-	Texture* tile_tex;
-	Texture* objects_tex;
-	Sprite* bg;
-	Sprite* bg_cloud1;
-	Sprite* bg_cloud2;
-	std::map<int, ClipPos*> map_clip;
-	std::map<int, ClipPos*> objs;
-	std::vector<Sprite*> boxs;
-	std::vector<Sprite*> objects;
-	Texture* ninja_tex;
-	Player* player;
+	std::shared_ptr<Texture> bg_tex;
+	std::shared_ptr<Texture> bg_cloud_tex;
+	std::shared_ptr<Texture> tile_tex;
+	std::shared_ptr<Texture> objects_tex;
+	std::shared_ptr<Sprite> bg;
+	std::shared_ptr<Sprite> bg_cloud1;
+	std::shared_ptr<Sprite> bg_cloud2;
+	std::map<int, std::shared_ptr<ClipPos>> map_clip;
+	std::map<int, std::shared_ptr<ClipPos>> objs;
+	std::vector<std::shared_ptr<Sprite>> boxs;
+	std::vector<std::shared_ptr<Sprite>> objects;
+	std::shared_ptr<Texture> ninja_tex;
+	std::shared_ptr<Player> player;
+	std::shared_ptr<Texture> zombie_tex;
+	std::shared_ptr<Zombie> zombie;
 };
 
 Level::Level() : Scene(){}
@@ -283,43 +302,43 @@ Level::~Level(){Clean();}
 
 void Level::Start()
 {
-	bg_tex = new Texture("images/BG.png");
-	bg = new Sprite(bg_tex);
+	bg_tex = std::shared_ptr<Texture>(new Texture("images/BG.png"));
+	bg = std::shared_ptr<Sprite>(new Sprite(bg_tex));
 	bg->SetSize(GameEngine::ScreenWidth, GameEngine::ScreenHeight);
 	AddChild(bg);
 
-	bg_cloud_tex = new Texture("images/Cloud.png");
-	bg_cloud1 = new Sprite(bg_cloud_tex);
+	bg_cloud_tex = std::shared_ptr<Texture>(new Texture("images/Cloud.png"));
+	bg_cloud1 = std::shared_ptr<Sprite>(new Sprite(bg_cloud_tex));
 	bg_cloud1->SetSize(2560, 1024);
 	bg_cloud1->SetPosition(0, -128);
-	bg_cloud2 = new Sprite(bg_cloud_tex);
+	bg_cloud2 = std::shared_ptr<Sprite>(new Sprite(bg_cloud_tex));
 	bg_cloud2->SetSize(2560, 1024);
 	bg_cloud2->SetPosition(bg_cloud1->GetWidth(), -128);
 	AddChild(bg_cloud1);
 	AddChild(bg_cloud2);
 
-	map_clip[1] = new ClipPos(0, 0);
-	map_clip[2] = new ClipPos(128, 0);
-	map_clip[3] = new ClipPos(256, 0);
-	map_clip[4] = new ClipPos(384, 0);
-	map_clip[5] = new ClipPos(512, 0);
-	map_clip[6] = new ClipPos(0, 128);
-	map_clip[7] = new ClipPos(128, 128);
-	map_clip[8] = new ClipPos(256, 128);
-	map_clip[9] = new ClipPos(384, 128);
-	map_clip[10] = new ClipPos(512, 128);
-	map_clip[11] = new ClipPos(0, 256);
-	map_clip[12] = new ClipPos(128, 256);
-	map_clip[13] = new ClipPos(256, 256);
-	map_clip[14] = new ClipPos(384, 256);
-	map_clip[15] = new ClipPos(512, 256);
-	map_clip[16] = new ClipPos(0, 384);
-	map_clip[17] = new ClipPos(128, 384);
-	map_clip[18] = new ClipPos(256, 384);
-	map_clip[19] = new ClipPos(384, 384);
-	map_clip[20] = new ClipPos(512, 384);
+	map_clip[1] = std::shared_ptr<ClipPos>(new ClipPos(0, 0));
+	map_clip[2] = std::shared_ptr<ClipPos>(new ClipPos(128, 0));
+	map_clip[3] = std::shared_ptr<ClipPos>(new ClipPos(256, 0));
+	map_clip[4] = std::shared_ptr<ClipPos>(new ClipPos(384, 0));
+	map_clip[5] = std::shared_ptr<ClipPos>(new ClipPos(512, 0));
+	map_clip[6] = std::shared_ptr<ClipPos>(new ClipPos(0, 128));
+	map_clip[7] = std::shared_ptr<ClipPos>(new ClipPos(128, 128));
+	map_clip[8] = std::shared_ptr<ClipPos>(new ClipPos(256, 128));
+	map_clip[9] = std::shared_ptr<ClipPos>(new ClipPos(384, 128));
+	map_clip[10] = std::shared_ptr<ClipPos>(new ClipPos(512, 128));
+	map_clip[11] = std::shared_ptr<ClipPos>(new ClipPos(0, 256));
+	map_clip[12] = std::shared_ptr<ClipPos>(new ClipPos(128, 256));
+	map_clip[13] = std::shared_ptr<ClipPos>(new ClipPos(256, 256));
+	map_clip[14] = std::shared_ptr<ClipPos>(new ClipPos(384, 256));
+	map_clip[15] = std::shared_ptr<ClipPos>(new ClipPos(512, 256));
+	map_clip[16] = std::shared_ptr<ClipPos>(new ClipPos(0, 384));
+	map_clip[17] = std::shared_ptr<ClipPos>(new ClipPos(128, 384));
+	map_clip[18] = std::shared_ptr<ClipPos>(new ClipPos(256, 384));
+	map_clip[19] = std::shared_ptr<ClipPos>(new ClipPos(384, 384));
+	map_clip[20] = std::shared_ptr<ClipPos>(new ClipPos(512, 384));
 
-	int map_game[10][20] = 
+	std::vector<std::vector<int>> map_game = 
 	{
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -333,7 +352,7 @@ void Level::Start()
 		{11,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,13}
 	};
 
-	int map_top_game[10][20] = 
+	std::vector<std::vector<int>> map_top_game = 
 	{
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -363,20 +382,20 @@ void Level::Start()
 
 	MapCollision::AddMap(collision);
 
-	objects_tex = new Texture("images/Objects.png");
+	objects_tex = std::shared_ptr<Texture>(new Texture("images/Objects.png"));
 
-	objs[0] = new ClipPos(0, 0, 384, 256);
-	objs[1] = new ClipPos(384, 0, 128, 128);
-	objs[2] = new ClipPos(512, 0, 128, 128);
-	objs[3] = new ClipPos(640, 0, 128, 128);
-	objs[4] = new ClipPos(384, 128, 128, 128);
-	objs[5] = new ClipPos(512, 128, 128, 128);
-	objs[6] = new ClipPos(640, 128, 128, 128);
-	objs[7] = new ClipPos(0, 256, 256, 128);
-	objs[8] = new ClipPos(256, 256, 128, 128);
-	objs[9] = new ClipPos(384, 256, 128, 128);
+	objs[0] = std::shared_ptr<ClipPos>(new ClipPos(0, 0, 384, 256));
+	objs[1] = std::shared_ptr<ClipPos>(new ClipPos(384, 0, 128, 128));
+	objs[2] = std::shared_ptr<ClipPos>(new ClipPos(512, 0, 128, 128));
+	objs[3] = std::shared_ptr<ClipPos>(new ClipPos(640, 0, 128, 128));
+	objs[4] = std::shared_ptr<ClipPos>(new ClipPos(384, 128, 128, 128));
+	objs[5] = std::shared_ptr<ClipPos>(new ClipPos(512, 128, 128, 128));
+	objs[6] = std::shared_ptr<ClipPos>(new ClipPos(640, 128, 128, 128));
+	objs[7] = std::shared_ptr<ClipPos>(new ClipPos(0, 256, 256, 128));
+	objs[8] = std::shared_ptr<ClipPos>(new ClipPos(256, 256, 128, 128));
+	objs[9] = std::shared_ptr<ClipPos>(new ClipPos(384, 256, 128, 128));
 
-	int o_pos[10][2] =
+	std::vector<std::vector<int>> o_pos =
 	{
 		{8*128+80, 6*128},
 		{2*128, 8*128},
@@ -393,7 +412,7 @@ void Level::Start()
 	for(int i = 0; i < 10; i++)
 	{
 		ClipPos posC = *objs[i];
-		Sprite* obj = new Sprite(objects_tex);
+		std::shared_ptr<Sprite> obj(new Sprite(objects_tex));
 		obj->CropImage(posC.x, posC.y, posC.width, posC.height);
 		obj->SetPivot(obj->GetWidth()/2, obj->GetHeight());
 		obj->SetPosition(o_pos[i][0], o_pos[i][1]);
@@ -401,7 +420,7 @@ void Level::Start()
 		objects.push_back(obj);
 	}
 
-	tile_tex = new Texture("images/Tiles.png");
+	tile_tex = std::shared_ptr<Texture>(new Texture("images/Tiles.png"));
 
 	for(int r = 0; r < collision.size(); r++)
 	{
@@ -410,7 +429,7 @@ void Level::Start()
 			if(map_game[r][c] != 0)
 			{
 				ClipPos posC = *map_clip[map_game[r][c]];
-				Sprite* box = new Sprite(tile_tex);
+				std::shared_ptr<Sprite> box(new Sprite(tile_tex));
 				box->CropImage(posC.x, posC.y, 128, 128);
 				box->SetPosition(128*c, 128*r);
 				AddChild(box);
@@ -418,7 +437,7 @@ void Level::Start()
 				if(map_top_game[r][c] != 0)
 				{
 					ClipPos posC = *map_clip[map_top_game[r][c]];
-					Sprite* box = new Sprite(tile_tex);
+					std::shared_ptr<Sprite> box(new Sprite(tile_tex));
 					box->CropImage(posC.x, posC.y, 128, 128);
 					box->SetPosition(128*c, 128*r);
 					AddChild(box);
@@ -428,14 +447,18 @@ void Level::Start()
 		}
 	}
 
-	ninja_tex = new Texture("images/Ninja.png");
-	player = new Player(ninja_tex);
+	ninja_tex = std::shared_ptr<Texture>(new Texture("images/Ninja.png"));
+	player = std::shared_ptr<Player>(new Player(ninja_tex));
 	AddChild(player);
 
 	SetCameraPosition(player->GetX()-GameEngine::ScreenWidth/2, player->GetY()-128-GameEngine::ScreenHeight/2);
 
-	GameAsset::Effect1 = new Texture("images/Effect1.png");
-	GameAsset::Effect2 = new Texture("images/Effect2.png");
+	zombie_tex = std::shared_ptr<Texture>(new Texture("images/Zombie.png"));
+	zombie = std::shared_ptr<Zombie>(new Zombie(zombie_tex));
+	AddChild(zombie);
+
+	GameAsset::Effect1 = std::shared_ptr<Texture>(new Texture("images/Effect1.png"));
+	GameAsset::Effect2 = std::shared_ptr<Texture>(new Texture("images/Effect2.png"));
 }
 
 void Level::Update()
@@ -460,53 +483,21 @@ void Level::Update()
 
 void Level::Clean()
 {
-	delete player;
-	delete ninja_tex;
-	delete bg;
-	delete bg_tex;
-	delete bg_cloud1;
-	delete bg_cloud2;
-	delete bg_cloud_tex;
-	std::map<int, ClipPos*>::iterator it = map_clip.begin();
-	while(it != map_clip.end())
-	{
-		delete it->second;
-		it++;
-	}
 	map_clip.clear();
-	it = objs.begin();
-	while(it != objs.end())
-	{
-		delete it->second;
-		it++;
-	}
 	objs.clear();
-	for(int i = 0; i < objects.size(); i++)
-		delete objects[i];
 	objects.clear();
-	for(int i = 0; i < boxs.size(); i++)
-	{
-		delete boxs[i];
-	}
 	boxs.clear();
-	delete objects_tex;
-	delete tile_tex;
-	delete GameAsset::Effect1;
-	delete GameAsset::Effect2;
 }
 
 int main(int argc, char* argv[])
 {
-	GameEngine* game = new GameEngine("Mini Game", 1280, 720);
+	std::shared_ptr<GameEngine> game(new GameEngine("Mini Game", 1280, 720));
 
-	Level* scene = new Level();
+	std::shared_ptr<Level> scene(new Level());
 
 	game->SetScene(scene);
 
 	game->Run();
-
-	delete scene;
-	delete game;
 
 	return 0;
 }

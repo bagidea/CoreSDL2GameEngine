@@ -1,6 +1,6 @@
 #include "Sprite.h"
 
-Sprite::Sprite(Texture* loader)
+Sprite::Sprite(std::shared_ptr<Texture> loader)
 {
 	x = y = pivotX = pivotY = rotation = frame = 0;
 	fps = 24;

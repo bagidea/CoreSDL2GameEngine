@@ -3,27 +3,27 @@
 int main(int argc, char* argv[])
 {
 	//Create game window size 1027 x 768
-	GameEngine* game = new GameEngine("Sprite feature and Animation", 1024, 768);
+	std::shared_ptr<GameEngine> game(new GameEngine("Sprite feature and Animation", 1024, 768));
 
 	//Create scene
-	Scene* scene = new Scene();
+	std::shared_ptr<Scene> scene = game->CreateScene();
 
 	//Set game scene
 	game->SetScene(scene);
 
 	//Load texture
-	Texture* bg_tex = new Texture("images/BG.png");
-	Texture* tile_tex = new Texture("images/Tiles.png");
-	Texture* tile2_tex = new Texture("images/Objects.png");
-	Texture* ninja_tex = new Texture("images/Ninja.png");
+	std::shared_ptr<Texture> bg_tex(new Texture("images/BG.png"));
+	std::shared_ptr<Texture> tile_tex(new Texture("images/Tiles.png"));
+	std::shared_ptr<Texture> tile2_tex(new Texture("images/Objects.png"));
+	std::shared_ptr<Texture> ninja_tex(new Texture("images/Ninja.png"));
 
 	//Create sprite from Texture
-	Sprite* BG = new Sprite(bg_tex);
-	Sprite* FLOOR_LEFT = new Sprite(tile_tex);
-	Sprite* FLOOR_MIDDLE = new Sprite(tile_tex);
-	Sprite* FLOOR_RIGHT = new Sprite(tile_tex);
-	Sprite* TREE = new Sprite(tile2_tex);
-	Sprite* NINJA = new Sprite(ninja_tex);
+	std::shared_ptr<Sprite> BG(new Sprite(bg_tex));
+	std::shared_ptr<Sprite> FLOOR_LEFT(new Sprite(tile_tex));
+	std::shared_ptr<Sprite> FLOOR_MIDDLE(new Sprite(tile_tex));
+	std::shared_ptr<Sprite> FLOOR_RIGHT(new Sprite(tile_tex));
+	std::shared_ptr<Sprite> TREE(new Sprite(tile2_tex));
+	std::shared_ptr<Sprite> NINJA(new Sprite(ninja_tex));
 
 	//Custom sprite
 	// new_width = screen_height/(height/width)
@@ -63,20 +63,6 @@ int main(int argc, char* argv[])
 
 	//Run game
 	game->Run();
-
-	//Delete all
-	delete BG;
-	delete FLOOR_LEFT;
-	delete FLOOR_MIDDLE;
-	delete FLOOR_RIGHT;
-	delete TREE;
-	delete NINJA;
-	delete bg_tex;
-	delete tile_tex;
-	delete tile2_tex;
-	delete ninja_tex;
-	delete scene;
-	delete game;
 
 	return 0;
 }

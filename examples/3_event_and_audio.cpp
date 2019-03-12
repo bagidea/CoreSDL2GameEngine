@@ -5,8 +5,7 @@
 class Game : public GameEngine
 {
 public:
-	Game(const char* title);
-	~Game();
+	Game(std::string title);
 	//Keyboard Event function
 	void KeyboardEvent(int key_event, int key_code);
 	//Mouse Event function
@@ -16,26 +15,23 @@ private:
 	void Start();
 	//Function Update is realtime working
 	void Update();
-	//Clean all after end game
-	void Clean();
 	//Define Scene class
-	Scene* scene;
-	Text* howto_txt;
-	Text* mousepos_txt;
+	std::shared_ptr<Scene> scene;
+	std::shared_ptr<Text> howto_txt;
+	std::shared_ptr<Text> mousepos_txt;
 	//Define Texture and Sprite
-	Texture* logo_tex;
-	Sprite* logo;
+	std::shared_ptr<Texture> logo_tex;
+	std::shared_ptr<Sprite> logo;
 	int targetX, targetY;
 	//Define Audio for background music
-	AudioMusic* bgAudio;
+	std::shared_ptr<AudioMusic> bgAudio;
 	//Define Audio track
-	AudioTrack* hit;
-	AudioTrack* hit2;
+	std::shared_ptr<AudioTrack> hit;
+	std::shared_ptr<AudioTrack> hit2;
 };
 
 //Create Game : GameEngine
-Game::Game(const char* title) : GameEngine(title, 800, 600){}
-Game::~Game(){Clean();}
+Game::Game(std::string title) : GameEngine(title, 800, 600){}
 
 //Keyboard Event function
 void Game::KeyboardEvent(int key_event, int key_code)
@@ -65,26 +61,26 @@ void Game::MouseEvent(int mouse_event)
 void Game::Start()
 {
 	//Create scene and SetScene
-	scene = new Scene();
+	scene = std::shared_ptr<Scene>(new Scene());
 	SetScene(scene);
 
 	//Create How to Text
-	howto_txt = new Text("Press SPACE to play hit audio, Mouse click to move image");
+	howto_txt = std::shared_ptr<Text>(new Text("Press SPACE to play hit audio, Mouse click to move image"));
 	howto_txt->SetAlign(TEXT_ALIGN_MIDDLE);
 	howto_txt->SetPosition(GameEngine::ScreenWidth/2, 10);
 	howto_txt->SetColor(COLOR_WHITE);
 	scene->AddText(howto_txt);
 
 	//Create Mouse position Text
-	mousepos_txt = new Text("mouse X: 0, mouse Y: 0");
+	mousepos_txt = std::shared_ptr<Text>(new Text("mouse X: 0, mouse Y: 0"));
 	mousepos_txt->SetAlign(TEXT_ALIGN_MIDDLE);
 	mousepos_txt->SetPosition(GameEngine::ScreenWidth/2, 50);
 	mousepos_txt->SetColor(COLOR_RED);
 	scene->AddText(mousepos_txt);
 
 	//Loader Texture and Create Sprite
-	logo_tex = new Texture("images/logo.png");
-	logo = new Sprite(logo_tex);
+	logo_tex = std::shared_ptr<Texture>(new Texture("images/logo.png"));
+	logo = std::shared_ptr<Sprite>(new Sprite(logo_tex));
 	logo->SetSize(50, 50);
 	//Set pivot to center image
 	logo->SetPivot(25, 25);
@@ -95,7 +91,7 @@ void Game::Start()
 	targetY = GameEngine::ScreenHeight/2;
 
 	//Load Audio Music
-	bgAudio = new AudioMusic("audios/Music.mp3");
+	bgAudio = std::shared_ptr<AudioMusic>(new AudioMusic("audios/Music.mp3"));
 	//Set volume 30 (0 - 128)
 	AudioMusic::SetVolume(30);
 	//Play music
@@ -103,9 +99,9 @@ void Game::Start()
 	//bgAudio->Pause();
 	//bgAudio->Stop();
 	
-	hit = new AudioTrack("audios/Hit.wav");
+	hit = std::shared_ptr<AudioTrack>(new AudioTrack("audios/Hit.wav"));
 	//hit->SetVolume(AUDIO_MAX_VOLUME); //MAX 128
-	hit2 = new AudioTrack("audios/Hit2.wav");
+	hit2 = std::shared_ptr<AudioTrack>(new AudioTrack("audios/Hit2.wav"));
 }
 
 //Function Update is realtime working
@@ -121,29 +117,13 @@ void Game::Update()
 	logo->SetPosition(newX, newY);
 }
 
-//Clean all after end game
-void Game::Clean()
-{
-	delete bgAudio;
-	delete hit;
-	delete hit2;
-	delete howto_txt;
-	delete mousepos_txt;
-	delete logo;
-	delete logo_tex;
-	delete scene;
-}
-
 int main(int argc, char* argv[])
 {
 	//Create Game
-	Game* game = new Game("Event and Audio");
+	std::shared_ptr<Game> game(new Game("Event and Audio"));
 
 	//Run Game
 	game->Run();
-
-	//Delete Game class
-	delete game;
 
 	return 0;
 }

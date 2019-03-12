@@ -1,10 +1,10 @@
 #include "Texture.h"
 
-Texture::Texture(const char* path)
+Texture::Texture(std::string path)
 {
 	if(Texture::loaders[path] == NULL)
 	{
-		img = IMG_Load(path);
+		img = IMG_Load(path.c_str());
 		if(img == NULL)
 			std::cout << "Unable to load image! : error - " << IMG_GetError() << std::endl;
 	}else{

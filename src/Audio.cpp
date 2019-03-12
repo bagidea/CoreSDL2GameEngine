@@ -1,8 +1,8 @@
 #include "Audio.h"
 
-AudioTrack::AudioTrack(const char* path)
+AudioTrack::AudioTrack(std::string path)
 {
-	audio = Mix_LoadWAV(path);
+	audio = Mix_LoadWAV(path.c_str());
 	if(audio == NULL)
 		std::cout << "Failed to load " << path << " : error - " << Mix_GetError() << std::endl;
 }
@@ -41,9 +41,9 @@ void AudioMusic::SetVolume(int volume)
 	Mix_VolumeMusic(volume);
 }
 
-AudioMusic::AudioMusic(const char* path)
+AudioMusic::AudioMusic(std::string path)
 {
-	audio = Mix_LoadMUS(path);
+	audio = Mix_LoadMUS(path.c_str());
 	if(audio == NULL)
 		std::cout << "Failed to music load " << path << " : error - " << Mix_GetError() << std::endl;
 }

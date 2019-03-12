@@ -10,7 +10,7 @@ class Texture
 {
 public:
 	static std::map<std::string, SDL_Texture*> loaders;
-	Texture(const char* path);
+	Texture(std::string path);
 	~Texture();
 	SDL_Surface* GetImage();
 	std::string GetPath();

@@ -10,7 +10,7 @@
 class AudioTrack
 {
 public:
-	AudioTrack(const char* path);
+	AudioTrack(std::string path);
 	~AudioTrack();
 	void SetVolume(int volume);
 	void Play();
@@ -24,7 +24,7 @@ class AudioMusic
 {
 public:
 	static void SetVolume(int volume);
-	AudioMusic(const char* path);
+	AudioMusic(std::string path);
 	~AudioMusic();
 	void Play();
 	void Pause();

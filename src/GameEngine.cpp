@@ -2,7 +2,7 @@
 
 int GameEngine::ScreenWidth = 0;
 int GameEngine::ScreenHeight = 0;
-Scene* Scene::Current = NULL;
+std::shared_ptr<Scene> Scene::Current = nullptr;
 std::map<std::string, SDL_Texture*> Texture::loaders;
 int Mouse::mouseX = 0;
 int Mouse::mouseY = 0;
@@ -10,19 +10,22 @@ int Mouse::mouseButton = 0;
 int Mouse::mouseWheelX = 0;
 int Mouse::mouseWheelY = 0;
 
-GameEngine::GameEngine(const char* title, int screen_width, int screen_height)
+GameEngine::GameEngine(std::string title, int screen_width, int screen_height)
 {
 	this->title = title;
 	this->screen_width = GameEngine::ScreenWidth = screen_width;
 	this->screen_height = GameEngine::ScreenHeight = screen_height;
 	window = NULL;
 	isQuit = false;
-	scene = NULL;
+	scene = nullptr;
 	init();
 }
 
 GameEngine::~GameEngine()
 {
+	if(scene != nullptr)
+		scene->End();
+	scenes.clear();
 	if(window != NULL)
 		SDL_DestroyWindow(window);
 	window = NULL;
@@ -47,7 +50,7 @@ void GameEngine::Run()
 			else if(e.type == KEYDOWN || e.type == KEYUP)
 			{
 				KeyboardEvent(e.type, e.key.keysym.sym);
-				if(scene != NULL && !isQuit)
+				if(scene != nullptr && !isQuit)
 					scene->KeyboardUpdate(e.type, e.key.keysym.sym);
 			}
 			else if(e.type == MOUSE_MOTION || e.type == MOUSE_BUTTONDOWN || e.type == MOUSE_BUTTONUP || MOUSE_WHEEL)
@@ -61,17 +64,23 @@ void GameEngine::Run()
 					Mouse::mouseWheelY = e.wheel.y;
 				}
 				MouseEvent(e.type);
-				if(scene != NULL && !isQuit)
+				if(scene != nullptr && !isQuit)
 					scene->MouseUpdate(e.type);
 			}
 		}
 		Update();
-		if(scene != NULL && !isQuit)
+		if(scene != nullptr && !isQuit)
 			scene->Render();
 	}
 }
 
-void GameEngine::SetScene(Scene* scene)
+std::shared_ptr<Scene> GameEngine::CreateScene()
+{
+	scenes.push_back(std::shared_ptr<Scene>(new Scene()));
+	return scenes[scenes.size()-1];
+}
+
+void GameEngine::SetScene(std::shared_ptr<Scene> scene)
 {
 	Scene::Current = this->scene = scene;
 	this->scene->Init(window);
@@ -97,7 +106,7 @@ int GameEngine::init()
 		std::cout << "SDL could not initialize! : error " << SDL_GetError() << std::endl;
 		return -1;
 	}
-	window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_width, screen_height, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_width, screen_height, SDL_WINDOW_SHOWN);
 	if(window == NULL)
 	{
 		std::cout << "Create window failed! : error - " << SDL_GetError() << std::endl;
