@@ -34,10 +34,14 @@ class GameAsset
 public:
 	static std::shared_ptr<Texture> Effect1;
 	static std::shared_ptr<Texture> Effect2;
+	static std::shared_ptr<AudioTrack> AudioHit1;
+	static std::shared_ptr<AudioTrack> AudioHit2;
 };
 
 std::shared_ptr<Texture> GameAsset::Effect1 = nullptr;
 std::shared_ptr<Texture> GameAsset::Effect2 = nullptr;
+std::shared_ptr<AudioTrack> GameAsset::AudioHit1 = nullptr;
+std::shared_ptr<AudioTrack> GameAsset::AudioHit2 = nullptr;
 
 class Effect :  public Sprite,
 		public std::enable_shared_from_this<Sprite>
@@ -102,6 +106,7 @@ void Kunai::Update()
 		eff->SetFPS(30);
 		eff->SetPosition(GetX(), GetY());
 		Scene::Current->AddChild(eff);
+		GameAsset::AudioHit2->Play();
 		Scene::Current->RemoveChild(shared_from_this());
 	}
 }
@@ -203,6 +208,7 @@ void Player::Update()
 		if(IsTag() != "Attack")
 			GotoAndPlay("Attack");
 		attack = true;
+		GameAsset::AudioHit1->Play();
 	}else{
 		if(IsTag() == "Attack" && !IsPlay())
 		{
@@ -287,14 +293,13 @@ private:
 	std::shared_ptr<Sprite> bg;
 	std::shared_ptr<Sprite> bg_cloud1;
 	std::shared_ptr<Sprite> bg_cloud2;
-	std::map<int, std::shared_ptr<ClipPos>> map_clip;
-	std::map<int, std::shared_ptr<ClipPos>> objs;
 	std::vector<std::shared_ptr<Sprite>> boxs;
 	std::vector<std::shared_ptr<Sprite>> objects;
 	std::shared_ptr<Texture> ninja_tex;
 	std::shared_ptr<Player> player;
 	std::shared_ptr<Texture> zombie_tex;
 	std::shared_ptr<Zombie> zombie;
+	std::shared_ptr<AudioMusic> music;
 };
 
 Level::Level() : Scene(){}
@@ -317,26 +322,29 @@ void Level::Start()
 	AddChild(bg_cloud1);
 	AddChild(bg_cloud2);
 
-	map_clip[1] = std::shared_ptr<ClipPos>(new ClipPos(0, 0));
-	map_clip[2] = std::shared_ptr<ClipPos>(new ClipPos(128, 0));
-	map_clip[3] = std::shared_ptr<ClipPos>(new ClipPos(256, 0));
-	map_clip[4] = std::shared_ptr<ClipPos>(new ClipPos(384, 0));
-	map_clip[5] = std::shared_ptr<ClipPos>(new ClipPos(512, 0));
-	map_clip[6] = std::shared_ptr<ClipPos>(new ClipPos(0, 128));
-	map_clip[7] = std::shared_ptr<ClipPos>(new ClipPos(128, 128));
-	map_clip[8] = std::shared_ptr<ClipPos>(new ClipPos(256, 128));
-	map_clip[9] = std::shared_ptr<ClipPos>(new ClipPos(384, 128));
-	map_clip[10] = std::shared_ptr<ClipPos>(new ClipPos(512, 128));
-	map_clip[11] = std::shared_ptr<ClipPos>(new ClipPos(0, 256));
-	map_clip[12] = std::shared_ptr<ClipPos>(new ClipPos(128, 256));
-	map_clip[13] = std::shared_ptr<ClipPos>(new ClipPos(256, 256));
-	map_clip[14] = std::shared_ptr<ClipPos>(new ClipPos(384, 256));
-	map_clip[15] = std::shared_ptr<ClipPos>(new ClipPos(512, 256));
-	map_clip[16] = std::shared_ptr<ClipPos>(new ClipPos(0, 384));
-	map_clip[17] = std::shared_ptr<ClipPos>(new ClipPos(128, 384));
-	map_clip[18] = std::shared_ptr<ClipPos>(new ClipPos(256, 384));
-	map_clip[19] = std::shared_ptr<ClipPos>(new ClipPos(384, 384));
-	map_clip[20] = std::shared_ptr<ClipPos>(new ClipPos(512, 384));
+	std::vector<std::vector<int>> map_clip = 
+	{
+		{0, 0},
+		{128, 0},
+		{256, 0},
+		{384, 0},
+		{512, 0},
+		{0, 128},
+		{128, 128},
+		{256, 128},
+		{384, 128},
+		{512, 128},
+		{0, 256},
+		{128, 256},
+		{256, 256},
+		{384, 256},
+		{512, 256},
+		{0, 384},
+		{128, 384},
+		{256, 384},
+		{384, 384},
+		{512, 384}
+	};
 
 	std::vector<std::vector<int>> map_game = 
 	{
@@ -384,16 +392,19 @@ void Level::Start()
 
 	objects_tex = std::shared_ptr<Texture>(new Texture("images/Objects.png"));
 
-	objs[0] = std::shared_ptr<ClipPos>(new ClipPos(0, 0, 384, 256));
-	objs[1] = std::shared_ptr<ClipPos>(new ClipPos(384, 0, 128, 128));
-	objs[2] = std::shared_ptr<ClipPos>(new ClipPos(512, 0, 128, 128));
-	objs[3] = std::shared_ptr<ClipPos>(new ClipPos(640, 0, 128, 128));
-	objs[4] = std::shared_ptr<ClipPos>(new ClipPos(384, 128, 128, 128));
-	objs[5] = std::shared_ptr<ClipPos>(new ClipPos(512, 128, 128, 128));
-	objs[6] = std::shared_ptr<ClipPos>(new ClipPos(640, 128, 128, 128));
-	objs[7] = std::shared_ptr<ClipPos>(new ClipPos(0, 256, 256, 128));
-	objs[8] = std::shared_ptr<ClipPos>(new ClipPos(256, 256, 128, 128));
-	objs[9] = std::shared_ptr<ClipPos>(new ClipPos(384, 256, 128, 128));
+	std::vector<std::vector<int>> objs = 
+	{
+		{0, 0, 384, 256},
+		{384, 0, 128, 128},
+		{512, 0, 128, 128},
+		{640, 0, 128, 128},
+		{384, 128, 128, 128},
+		{512, 128, 128, 128},
+		{640, 128, 128, 128},
+		{0, 256, 256, 128},
+		{256, 256, 128, 128},
+		{384, 256, 128, 128}
+	};
 
 	std::vector<std::vector<int>> o_pos =
 	{
@@ -409,11 +420,11 @@ void Level::Start()
 		{4*128, 8*128}
 	};
 
-	for(int i = 0; i < 10; i++)
+	for(int i = 0; i < objs.size(); i++)
 	{
-		ClipPos posC = *objs[i];
+		std::vector<int> posC = objs[i];
 		std::shared_ptr<Sprite> obj(new Sprite(objects_tex));
-		obj->CropImage(posC.x, posC.y, posC.width, posC.height);
+		obj->CropImage(posC[0], posC[1], posC[2], posC[3]);
 		obj->SetPivot(obj->GetWidth()/2, obj->GetHeight());
 		obj->SetPosition(o_pos[i][0], o_pos[i][1]);
 		AddChild(obj);
@@ -428,17 +439,17 @@ void Level::Start()
 		{
 			if(map_game[r][c] != 0)
 			{
-				ClipPos posC = *map_clip[map_game[r][c]];
+				std::vector<int> posC = map_clip[map_game[r][c]-1];
 				std::shared_ptr<Sprite> box(new Sprite(tile_tex));
-				box->CropImage(posC.x, posC.y, 128, 128);
+				box->CropImage(posC[0], posC[1], 128, 128);
 				box->SetPosition(128*c, 128*r);
 				AddChild(box);
 				boxs.push_back(box);
 				if(map_top_game[r][c] != 0)
 				{
-					ClipPos posC = *map_clip[map_top_game[r][c]];
+					std::vector<int> posC = map_clip[map_top_game[r][c]-1];
 					std::shared_ptr<Sprite> box(new Sprite(tile_tex));
-					box->CropImage(posC.x, posC.y, 128, 128);
+					box->CropImage(posC[0], posC[1], 128, 128);
 					box->SetPosition(128*c, 128*r);
 					AddChild(box);
 					boxs.push_back(box);
@@ -459,6 +470,12 @@ void Level::Start()
 
 	GameAsset::Effect1 = std::shared_ptr<Texture>(new Texture("images/Effect1.png"));
 	GameAsset::Effect2 = std::shared_ptr<Texture>(new Texture("images/Effect2.png"));
+
+	music = LoadAudioMusic("audios/Music.mp3");
+	music->SetVolume(20);
+	music->Play();
+	GameAsset::AudioHit1 = LoadAudioTrack("audios/Hit.wav");
+	GameAsset::AudioHit2 = LoadAudioTrack("audios/Hit2.wav");
 }
 
 void Level::Update()
@@ -483,8 +500,6 @@ void Level::Update()
 
 void Level::Clean()
 {
-	map_clip.clear();
-	objs.clear();
 	objects.clear();
 	boxs.clear();
 }

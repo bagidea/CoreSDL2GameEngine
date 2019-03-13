@@ -7,12 +7,7 @@ AudioTrack::AudioTrack(std::string path)
 		std::cout << "Failed to load " << path << " : error - " << Mix_GetError() << std::endl;
 }
 
-AudioTrack::~AudioTrack()
-{
-	if(audio != NULL)
-		Mix_FreeChunk(audio);
-	audio = NULL;
-}
+AudioTrack::~AudioTrack(){}
 
 void AudioTrack::SetVolume(int volume)
 {
@@ -36,6 +31,13 @@ void AudioTrack::play(int loop_count)
 		Mix_PlayChannel(-1, audio, loop_count);
 }
 
+void AudioTrack::End()
+{
+	if(audio != NULL)
+		Mix_FreeChunk(audio);
+	audio = NULL;
+}
+
 void AudioMusic::SetVolume(int volume)
 {
 	Mix_VolumeMusic(volume);
@@ -48,12 +50,7 @@ AudioMusic::AudioMusic(std::string path)
 		std::cout << "Failed to music load " << path << " : error - " << Mix_GetError() << std::endl;
 }
 
-AudioMusic::~AudioMusic()
-{
-	if(audio != NULL)
-		Mix_FreeMusic(audio);
-	audio = NULL;
-}
+AudioMusic::~AudioMusic(){}
 
 void AudioMusic::Play()
 {
@@ -71,4 +68,11 @@ void AudioMusic::Pause()
 void AudioMusic::Stop()
 {
 	Mix_HaltMusic();
+}
+
+void AudioMusic::End()
+{
+	if(audio != NULL)
+		Mix_FreeMusic(audio);
+	audio = NULL;
 }

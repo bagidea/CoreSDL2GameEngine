@@ -91,7 +91,7 @@ void Game::Start()
 	targetY = GameEngine::ScreenHeight/2;
 
 	//Load Audio Music
-	bgAudio = std::shared_ptr<AudioMusic>(new AudioMusic("audios/Music.mp3"));
+	bgAudio = scene->LoadAudioMusic("audios/Music.mp3");
 	//Set volume 30 (0 - 128)
 	AudioMusic::SetVolume(30);
 	//Play music
@@ -99,7 +99,7 @@ void Game::Start()
 	//bgAudio->Pause();
 	//bgAudio->Stop();
 	
-	hit = std::shared_ptr<AudioTrack>(new AudioTrack("audios/Hit.wav"));
+	hit = scene->LoadAudioTrack("audios/Hit.wav");
 	//hit->SetVolume(AUDIO_MAX_VOLUME); //MAX 128
 	hit2 = std::shared_ptr<AudioTrack>(new AudioTrack("audios/Hit2.wav"));
 }

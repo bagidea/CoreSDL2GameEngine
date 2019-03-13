@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 #include <SDL2/SDL_mixer.h>
 
 //volume 0 to 128
@@ -15,6 +16,7 @@ public:
 	void SetVolume(int volume);
 	void Play();
 	void Play(int loop_count);
+	void End();
 private:
 	Mix_Chunk* audio;
 	void play(int loop_count);
@@ -29,6 +31,7 @@ public:
 	void Play();
 	void Pause();
 	void Stop();
+	void End();
 private:
 	Mix_Music* audio;
 };

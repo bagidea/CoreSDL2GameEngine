@@ -33,6 +33,12 @@ int Scene::Init(SDL_Window* window)
 void Scene::End()
 {
 	texts.clear();
+	for(std::shared_ptr<AudioMusic> i : audio_musics)
+		i->End();
+	audio_musics.clear();
+	for(std::shared_ptr<AudioTrack> i : audio_tracks)
+		i->End();
+	audio_tracks.clear();
 }
 
 void Scene::SetBackgroundColor(Color color)
@@ -52,18 +58,7 @@ void Scene::AddChild(std::shared_ptr<Sprite> sprite)
 
 void Scene::RemoveChild(std::shared_ptr<Sprite> sprite)
 {
-	bool success = false;
-	for(int i = 0; i < sprites.size(); i++)
-	{
-		if(sprites[i] == sprite)
-		{
-			sprites.erase(sprites.begin()+i);
-			success = true;
-			break;
-		}
-		if(success)
-			break;
-	}
+	sprites.erase(std::remove(sprites.begin(), sprites.end(), sprite), sprites.end());
 }
 
 void Scene::AddText(std::shared_ptr<Text> text)
@@ -77,18 +72,19 @@ void Scene::AddText(std::shared_ptr<Text> text)
 
 void Scene::RemoveText(std::shared_ptr<Text> text)
 {
-	bool success = false;
-	for(int i = 0; i < texts.size(); i++)
-	{
-		if(texts[i] == text)
-		{
-			texts.erase(texts.begin()+i);
-			success = true;
-			break;
-		}
-		if(success)
-			break;
-	}
+	texts.erase(std::remove(texts.begin(), texts.end(), text), texts.end());
+}
+
+std::shared_ptr<AudioMusic> Scene::LoadAudioMusic(std::string path)
+{
+	audio_musics.push_back(std::shared_ptr<AudioMusic>(new AudioMusic(path)));
+	return audio_musics[audio_musics.size()-1];
+}
+
+std::shared_ptr<AudioTrack> Scene::LoadAudioTrack(std::string path)
+{
+	audio_tracks.push_back(std::shared_ptr<AudioTrack>(new AudioTrack(path)));
+	return audio_tracks[audio_tracks.size()-1];
 }
 
 void Scene::Render()
@@ -99,9 +95,12 @@ void Scene::Render()
 		SDL_RenderClear(renderer);
 		for(std::shared_ptr<Sprite> sp : sprites)
 		{
-			RawSprite rawSp = sp->GetRawSprite();
-			SDL_Rect render = {rawSp.render.x-cameraX, rawSp.render.y-cameraY, rawSp.render.w, rawSp.render.h};
-			SDL_RenderCopyEx(renderer, rawSp.texture, &rawSp.clip, &render, rawSp.rotation, &rawSp.pivot, rawSp.flip);
+			if(sp != nullptr)
+			{
+				RawSprite rawSp = sp->GetRawSprite();
+				SDL_Rect render = {rawSp.render.x-cameraX, rawSp.render.y-cameraY, rawSp.render.w, rawSp.render.h};
+				SDL_RenderCopyEx(renderer, rawSp.texture, &rawSp.clip, &render, rawSp.rotation, &rawSp.pivot, rawSp.flip);
+			}
 		}
 		for(std::shared_ptr<Text> txt : texts)
 		{

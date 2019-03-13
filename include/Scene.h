@@ -2,12 +2,14 @@
 
 #include <iostream>
 #include <memory>
+#include <algorithm>
 #include <vector>
 #include <SDL2/SDL.h>
 #include "KeyboardAndMouse.h"
 #include "Color.h"
 #include "Sprite.h"
 #include "Text.h"
+#include "Audio.h"
 
 class Scene
 {
@@ -22,6 +24,8 @@ public:
 	void RemoveChild(std::shared_ptr<Sprite> sprite);
 	void AddText(std::shared_ptr<Text> text);
 	void RemoveText(std::shared_ptr<Text> text);
+	std::shared_ptr<AudioMusic> LoadAudioMusic(std::string path);
+	std::shared_ptr<AudioTrack> LoadAudioTrack(std::string path);
 	void Render();
 	void KeyboardUpdate(int key_event, int key_code);
 	void MouseUpdate(int mouse_event);
@@ -36,6 +40,8 @@ private:
 	Color bgColor;
 	std::vector<std::shared_ptr<Sprite>> sprites;
 	std::vector<std::shared_ptr<Text>> texts;
+	std::vector<std::shared_ptr<AudioMusic>> audio_musics;
+	std::vector<std::shared_ptr<AudioTrack>> audio_tracks;
 	virtual void Start();
 	virtual void Update();
 };
