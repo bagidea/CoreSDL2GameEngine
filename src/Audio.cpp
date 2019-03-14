@@ -7,7 +7,7 @@ AudioTrack::AudioTrack(std::string path)
 		std::cout << "Failed to load " << path << " : error - " << Mix_GetError() << std::endl;
 }
 
-AudioTrack::~AudioTrack(){}
+AudioTrack::~AudioTrack(){End();}
 
 void AudioTrack::SetVolume(int volume)
 {

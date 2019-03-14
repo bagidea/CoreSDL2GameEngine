@@ -10,7 +10,9 @@ Text::Text(std::string text)
 	init(text);
 }
 
-Text::~Text()
+Text::~Text(){End();}
+
+void Text::End()
 {
 	CleanFont();
 	CleanTexture();
@@ -36,9 +38,19 @@ void Text::SetFont(std::string font_path)
 	this->font_path = font_path;
 }
 
+std::string Text::GetFont()
+{
+	return font_path;
+}
+
 void Text::SetSize(int size)
 {
 	this->size = size;
+}
+
+int Text::GetSize()
+{
+	return size;
 }
 
 void Text::SetColor(Color color)
@@ -126,7 +138,7 @@ RawSprite Text::GetRawSprite()
 				std::cout << "Create texture TTF failed! error - " << SDL_GetError() << std::endl;
 			SDL_Rect new_clip = {0, 0, img->w, img->h};
 			clip = new_clip;
-			SDL_Rect new_render = {x-pivotX+((align == TEXT_ALIGN_LEFT)?0:(align == TEXT_ALIGN_RIGHT)?-img->w:-(img->w/2)), y-pivotY+((valign == TEXT_VALIGN_TOP)?0:(valign == TEXT_VALIGN_BOTTOM)?-img->h:-(img->h/2)), img->w, img->h};
+			SDL_Rect new_render = {0, 0, img->w, img->h};
 			render = new_render;
 			color_temp = color;
 			text_temp = text;
@@ -136,6 +148,8 @@ RawSprite Text::GetRawSprite()
 			CleanTexture();
 		}
 	}
+	render.x = x-pivotX+((align == TEXT_ALIGN_LEFT)?0:(align == TEXT_ALIGN_RIGHT)?-render.w:-(render.w/2));
+	render.y = y-pivotY+((valign == TEXT_VALIGN_TOP)?0:(valign == TEXT_VALIGN_BOTTOM)?-render.h:-(render.h/2));
 	return RawSprite(texture, clip, render, pivot, rotation, SDL_FLIP_NONE);
 }
 

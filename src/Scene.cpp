@@ -32,6 +32,8 @@ int Scene::Init(SDL_Window* window)
 
 void Scene::End()
 {
+	for(std::shared_ptr<Text> i : texts)
+		i->End();
 	texts.clear();
 	for(std::shared_ptr<AudioMusic> i : audio_musics)
 		i->End();

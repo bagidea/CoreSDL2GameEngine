@@ -116,9 +116,11 @@ class Player : public Sprite
 public:
 	Player(std::shared_ptr<Texture> texture);
 	void KeyboardEvent(int key_event, int key_code);
+	int GetScore();
 private:
 	void Start();
 	void Update();
+	int score;
 	bool _left, _right, _jump, jump, _attack, attack, _shoot, shoot;
 	int speed, gravity;
 	int speedY;
@@ -157,9 +159,14 @@ void Player::KeyboardEvent(int key_event, int key_code)
 	}
 }
 
+int Player::GetScore()
+{
+	return score;
+}
 
 void Player::Start()
 {
+	score = 0;
 	_left = _right = _jump = jump = _attack = attack = _shoot = shoot = false;
 	speed = 5;
 	speedY = 0;
@@ -284,17 +291,25 @@ public:
 	~Level();
 private:
 	void Start();
+	void UI();
+	void UI_Update();
 	void Update();
 	void Clean();
 	std::shared_ptr<Texture> bg_tex;
 	std::shared_ptr<Texture> bg_cloud_tex;
 	std::shared_ptr<Texture> tile_tex;
 	std::shared_ptr<Texture> objects_tex;
+	std::shared_ptr<Texture> hart_tex;
 	std::shared_ptr<Sprite> bg;
 	std::shared_ptr<Sprite> bg_cloud1;
 	std::shared_ptr<Sprite> bg_cloud2;
 	std::vector<std::shared_ptr<Sprite>> boxs;
 	std::vector<std::shared_ptr<Sprite>> objects;
+	std::shared_ptr<Sprite> hart1;
+	std::shared_ptr<Sprite> hart2;
+	std::shared_ptr<Sprite> hart3;
+	std::shared_ptr<Text> score_txt;
+	std::shared_ptr<Text> score_value_txt;
 	std::shared_ptr<Texture> ninja_tex;
 	std::shared_ptr<Player> player;
 	std::shared_ptr<Texture> zombie_tex;
@@ -474,8 +489,58 @@ void Level::Start()
 	music = LoadAudioMusic("audios/Music.mp3");
 	music->SetVolume(20);
 	music->Play();
+
 	GameAsset::AudioHit1 = LoadAudioTrack("audios/Hit.wav");
 	GameAsset::AudioHit2 = LoadAudioTrack("audios/Hit2.wav");
+
+	UI();
+}
+
+void Level::UI()
+{
+	hart_tex = std::shared_ptr<Texture>(new Texture("images/HartIcon.png"));
+	hart1 = std::shared_ptr<Sprite>(new Sprite(hart_tex));
+	hart2 = std::shared_ptr<Sprite>(new Sprite(hart_tex));
+	hart3 = std::shared_ptr<Sprite>(new Sprite(hart_tex));
+	hart1->CreateSpriteSheet(2, 1);
+	hart2->CreateSpriteSheet(2, 1);
+	hart3->CreateSpriteSheet(2, 1);
+	hart1->AddTag("False", 2);
+	hart1->AddTag("True", 1);
+	hart2->AddTag("False", 2);
+	hart2->AddTag("True", 1);
+	hart3->AddTag("False", 2);
+	hart3->AddTag("True", 1);
+	hart1->SetPosition(GetCameraX()+50, GetCameraY()+20);
+	hart2->SetPosition(GetCameraX()+100, GetCameraY()+20);
+	hart3->SetPosition(GetCameraX()+150, GetCameraY()+20);
+	AddChild(hart1);
+	AddChild(hart2);
+	AddChild(hart3);
+
+	score_txt = std::shared_ptr<Text>(new Text("SCORE"));
+	score_txt->SetSize(20);
+	score_txt->SetAlign(TEXT_ALIGN_MIDDLE);
+	score_txt->SetColor(COLOR_WHITE);
+	score_txt->SetPosition(GetCameraX()+GameEngine::ScreenWidth/2, GetCameraY()+20);
+	AddText(score_txt);
+
+	score_value_txt = std::shared_ptr<Text>(new Text("0"));
+	score_value_txt->SetSize(30);
+	score_value_txt->SetAlign(TEXT_ALIGN_MIDDLE);
+	score_value_txt->SetColor(COLOR_WHITE);
+	score_value_txt->SetPosition(GetCameraX()+GameEngine::ScreenWidth/2, GetCameraY()+50);
+	AddText(score_value_txt);
+}
+
+void Level::UI_Update()
+{
+	hart1->SetPosition(GetCameraX()+50, GetCameraY()+20);
+	hart2->SetPosition(GetCameraX()+100, GetCameraY()+20);
+	hart3->SetPosition(GetCameraX()+150, GetCameraY()+20);
+	score_txt->SetPosition(GetCameraX()+GameEngine::ScreenWidth/2, GetCameraY()+20);
+	score_value_txt->SetText(std::to_string(player->GetScore()));
+	score_value_txt->SetPosition(GetCameraX()+GameEngine::ScreenWidth/2, GetCameraY()+50);
 }
 
 void Level::Update()
@@ -496,6 +561,8 @@ void Level::Update()
 		bg_cloud1->SetPosition(bg_cloud2->GetX()+bg_cloud2->GetWidth(), bg_cloud1->GetY());
 	if(bg_cloud2->GetX() < -bg_cloud2->GetWidth())
 		bg_cloud2->SetPosition(bg_cloud1->GetX()+bg_cloud1->GetWidth(), bg_cloud2->GetY());
+
+	UI_Update();
 }
 
 void Level::Clean()
@@ -506,7 +573,7 @@ void Level::Clean()
 
 int main(int argc, char* argv[])
 {
-	std::shared_ptr<GameEngine> game(new GameEngine("Mini Game", 1280, 720));
+	std::unique_ptr<GameEngine> game(new GameEngine("Mini Game", 1280, 720));
 
 	std::shared_ptr<Level> scene(new Level());
 

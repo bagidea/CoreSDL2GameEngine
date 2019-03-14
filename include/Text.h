@@ -21,11 +21,14 @@ public:
 	Text();
 	Text(std::string text);
 	~Text();
+	void End();
 	void Init(SDL_Renderer* renderer);
 	void SetText(std::string text);
 	std::string GetText();
 	void SetFont(std::string font_path);
+	std::string GetFont();
 	void SetSize(int size);
+	int GetSize();
 	void SetColor(Color color);
 	void SetAlign(int align);
 	void SetVAlign(int valign);
