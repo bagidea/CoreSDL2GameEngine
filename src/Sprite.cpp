@@ -2,6 +2,7 @@
 
 Sprite::Sprite(std::shared_ptr<Texture> loader)
 {
+	visible = true;
 	x = y = pivotX = pivotY = rotation = frame = 0;
 	fps = 24;
 	isPlay = false;
@@ -63,6 +64,16 @@ int Sprite::Init(SDL_Renderer* renderer)
 	}
 	Start();
 	return 0;
+}
+
+void Sprite::SetVisible(bool visible)
+{
+	this->visible = visible;
+}
+
+bool Sprite::GetVisible()
+{
+	return visible;
 }
 
 void Sprite::CropImage(int x, int y, int width, int height)
@@ -259,7 +270,17 @@ int Sprite::GetRotation()
 	return rotation;
 }
 
+void Sprite::GeometryUpdate(int layer)
+{
+	if(layer == 0)
+		GeometryBack();
+	else
+		GeometryFront();
+}
+
 void Sprite::KeyboardEvent(int key_event, int key_code){}
 void Sprite::MouseEvent(int mouse_event){}
 void Sprite::Start(){}
 void Sprite::Update(){}
+void Sprite::GeometryBack(){}
+void Sprite::GeometryFront(){}

@@ -2,9 +2,10 @@
 
 struct Color
 {
-	int r, g, b;
-	Color() : r(255), g(255), b(255){}
-	Color(int _r, int _g, int _b) : r(_r), g(_g), b(_b){}
+	int r, g, b, a;
+	Color() : r(255), g(255), b(255), a(255){}
+	Color(int _r, int _g, int _b) : r(_r), g(_g), b(_b), a(255){}
+	Color(int _r, int _g, int _b, int _a) : r(_r), g(_g), b(_b), a(_a){}
 };
 
 #define COLOR_WHITE Color(255, 255, 255)

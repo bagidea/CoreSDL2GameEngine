@@ -29,6 +29,8 @@ public:
 	Sprite(std::shared_ptr<Texture> loader);
 	~Sprite();
 	int Init(SDL_Renderer* renderer);
+	void SetVisible(bool visible);
+	bool GetVisible();
 	void CropImage(int x, int y, int width, int height);
 	void CreateSpriteSheet(int num_x, int num_y);
 	void SetFPS(unsigned int fps);
@@ -53,6 +55,7 @@ public:
 	int GetPivotY();
 	void SetRotation(int rotation);
 	int GetRotation();
+	void GeometryUpdate(int layer);
 	virtual void KeyboardEvent(int key_event, int key_code);
 	virtual void MouseEvent(int mouse_event);
 private:
@@ -60,6 +63,7 @@ private:
 	std::string path;
 	SDL_Texture* texture;
 	unsigned int tmr, fps;
+	bool visible;
 	int x, y, img_width, img_height, width, height, pivotX, pivotY, rotation, frame;
 	bool isPlay;
 	std::vector<SDL_Rect> clips;
@@ -68,6 +72,8 @@ private:
 	std::map<std::string, int> tagsMode;
 	virtual void Start();
 	virtual void Update();
+	virtual void GeometryBack();
+	virtual void GeometryFront();
 };
 
 #endif

@@ -23,6 +23,8 @@ public:
 	~Text();
 	void End();
 	void Init(SDL_Renderer* renderer);
+	void SetVisible(bool visible);
+	bool GetVisible();
 	void SetText(std::string text);
 	std::string GetText();
 	void SetFont(std::string font_path);
@@ -40,17 +42,25 @@ public:
 	int GetPivotY();
 	void SetRotation(int rotation);
 	int GetRotation();
+	int GetWidth();
+	int GetHeight();
 	RawSprite GetRawSprite();
+	void GeometryUpdate(int layer);
 private:
 	SDL_Renderer* renderer;
 	std::string text, text_temp;
 	std::string font_path, font_path_temp;
-	int x, y, size, size_temp, align, valign, pivotX, pivotY, rotation;
+	bool visible;
+	int x, y, size, size_temp, align, valign, pivotX, pivotY, rotation, width, height;
 	Color color, color_temp;
 	TTF_Font* font;
 	SDL_Texture* texture;
 	SDL_Rect clip, render;
 	void init(std::string text);
+	virtual void Start();
+	virtual void Update();
+	virtual void GeometryBack();
+	virtual void GeometryFront();
 	void CleanFont();
 	void CleanTexture();
 };

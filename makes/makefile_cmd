@@ -5,7 +5,7 @@ LIBRARY = -Llib
 FLAG = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 PARTY = $(INCLUDE) $(LIBRARY) $(FLAG)
 
-OBJ = obj\Audio.o obj\Text.o obj\Texture.o obj\Sprite.o obj\Scene.o obj\GameEngine.o
+OBJ = obj\Geometry.o obj\Audio.o obj\Text.o obj\Texture.o obj\Sprite.o obj\Scene.o obj\GameEngine.o
 
 build:
 	$(CC) main.cpp $(OBJ) $(PARTY) -o bin\Game.exe
@@ -18,6 +18,7 @@ clean:
 
 core: clean_core
 	mkdir obj
+	$(CC) -c src\Geometry.cpp $(PARTY) -o obj\Geometry.o
 	$(CC) -c src\Audio.cpp $(PARTY) -o obj\Audio.o
 	$(CC) -c src\Text.cpp $(PARTY) -o obj\Text.o
 	$(CC) -c src\Texture.cpp $(PARTY) -o obj\Texture.o

@@ -10,6 +10,7 @@
 #include "Sprite.h"
 #include "Text.h"
 #include "Audio.h"
+#include "Geometry.h"
 
 class Scene
 {
@@ -27,6 +28,9 @@ public:
 	std::shared_ptr<AudioMusic> LoadAudioMusic(std::string path);
 	std::shared_ptr<AudioTrack> LoadAudioTrack(std::string path);
 	void Render();
+	void DrawLine(int x1, int y1, int x2, int y2, Color color);
+	void DrawRect(int x, int y, int width, int height, Color color);
+	void DrawFillRect(int x, int y, int width, int height, Color color);
 	void KeyboardUpdate(int key_event, int key_code);
 	void MouseUpdate(int mouse_event);
 	void SetCameraPosition(int x, int y);
@@ -44,4 +48,6 @@ private:
 	std::vector<std::shared_ptr<AudioTrack>> audio_tracks;
 	virtual void Start();
 	virtual void Update();
+	virtual void GeometryBack();
+	virtual void GeometryFront();
 };

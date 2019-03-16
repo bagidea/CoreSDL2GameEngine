@@ -209,6 +209,7 @@ void Player::Update()
 	{
 		speedY = -25;
 		SetPosition(GetX(), GetY()-1);
+		jump = true;
 	}
 	if(_attack && !jump && !attack && !shoot)
 	{

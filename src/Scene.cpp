@@ -25,6 +25,7 @@ int Scene::Init(SDL_Window* window)
 			return -1;
 		}
 	}
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, 255);
 	Start();
 	return 0;
@@ -46,7 +47,6 @@ void Scene::End()
 void Scene::SetBackgroundColor(Color color)
 {
 	bgColor = color;
-	SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, 255);
 }
 
 void Scene::AddChild(std::shared_ptr<Sprite> sprite)
@@ -94,30 +94,58 @@ void Scene::Render()
 	if(renderer != NULL)
 	{
 		Update();
+		SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 		SDL_RenderClear(renderer);
+		GeometryBack();
 		for(std::shared_ptr<Sprite> sp : sprites)
 		{
 			if(sp != nullptr)
 			{
-				RawSprite rawSp = sp->GetRawSprite();
-				SDL_Rect render = {rawSp.render.x-cameraX, rawSp.render.y-cameraY, rawSp.render.w, rawSp.render.h};
-				SDL_RenderCopyEx(renderer, rawSp.texture, &rawSp.clip, &render, rawSp.rotation, &rawSp.pivot, rawSp.flip);
+				if(sp->GetVisible())
+				{
+					sp->GeometryUpdate(0);
+					RawSprite rawSp = sp->GetRawSprite();
+					SDL_Rect render = {rawSp.render.x-cameraX, rawSp.render.y-cameraY, rawSp.render.w, rawSp.render.h};
+					SDL_RenderCopyEx(renderer, rawSp.texture, &rawSp.clip, &render, rawSp.rotation, &rawSp.pivot, rawSp.flip);
+					sp->GeometryUpdate(1);
+				}
 			}
 		}
 		for(std::shared_ptr<Text> txt : texts)
 		{
 			if(txt != nullptr)
 			{
-				RawSprite rawTxt = txt->GetRawSprite();
-				if(rawTxt.texture != NULL)
+				if(txt->GetVisible())
 				{
-					SDL_Rect render = {rawTxt.render.x-cameraX, rawTxt.render.y-cameraY, rawTxt.render.w, rawTxt.render.h};
-					SDL_RenderCopyEx(renderer, rawTxt.texture, &rawTxt.clip, &render, rawTxt.rotation, &rawTxt.pivot, rawTxt.flip);
+					txt->GeometryUpdate(0);
+					RawSprite rawTxt = txt->GetRawSprite();
+					if(rawTxt.texture != NULL)
+					{
+						SDL_Rect render = {rawTxt.render.x-cameraX, rawTxt.render.y-cameraY, rawTxt.render.w, rawTxt.render.h};
+						SDL_RenderCopyEx(renderer, rawTxt.texture, &rawTxt.clip, &render, rawTxt.rotation, &rawTxt.pivot, rawTxt.flip);
+						txt->GeometryUpdate(1);
+					}
 				}
 			}
 		}
+		GeometryFront();
 		SDL_RenderPresent(renderer);
 	}
+}
+
+void Scene::DrawLine(int x1, int y1, int x2, int y2, Color color)
+{
+	Geometry::DrawLine(renderer, x1, y1, x2, y2, color);
+}
+
+void Scene::DrawRect(int x, int y, int width, int height, Color color)
+{
+	Geometry::DrawRect(renderer, x, y, width, height, color);
+}
+
+void Scene::DrawFillRect(int x, int y, int width, int height, Color color)
+{
+	Geometry::DrawFillRect(renderer, x, y, width, height, color);
 }
 
 void Scene::KeyboardUpdate(int key_event, int key_code)
@@ -155,3 +183,5 @@ void Scene::KeyboardEvent(int key_event, int key_code){}
 void Scene::MouseEvent(int mouse_event){}
 void Scene::Start(){}
 void Scene::Update(){}
+void Scene::GeometryBack(){}
+void Scene::GeometryFront(){}

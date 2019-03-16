@@ -82,6 +82,8 @@ std::shared_ptr<Scene> GameEngine::CreateScene()
 
 void GameEngine::SetScene(std::shared_ptr<Scene> scene)
 {
+	if(std::find(scenes.begin(), scenes.end(), scene) == scenes.end())
+		scenes.push_back(scene);
 	Scene::Current = this->scene = scene;
 	this->scene->Init(window);
 }

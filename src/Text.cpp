@@ -21,6 +21,17 @@ void Text::End()
 void Text::Init(SDL_Renderer* renderer)
 {
 	this->renderer = renderer;
+	Start();
+}
+
+void Text::SetVisible(bool visible)
+{
+	this->visible = visible;
+}
+
+bool Text::GetVisible()
+{
+	return visible;
 }
 
 void Text::SetText(std::string text)
@@ -110,8 +121,19 @@ int Text::GetRotation()
 	return rotation;
 }
 
+int Text::GetWidth()
+{
+	return render.w;
+}
+
+int Text::GetHeight()
+{
+	return render.h;
+}
+
 RawSprite Text::GetRawSprite()
 {
+	Update();
 	SDL_Point pivot = {pivotX, pivotY};
 	bool font_update = false;
 	if(font == NULL || font_path != font_path_temp || size != size_temp)
@@ -153,8 +175,17 @@ RawSprite Text::GetRawSprite()
 	return RawSprite(texture, clip, render, pivot, rotation, SDL_FLIP_NONE);
 }
 
+void Text::GeometryUpdate(int layer)
+{
+	if(layer == 0)
+		GeometryBack();
+	else
+		GeometryFront();
+}
+
 void Text::init(std::string text)
 {
+	visible = true;
 	x = y = pivotX = pivotY = rotation = align = valign = 0;
 	font_path = font_path_temp = "fonts/arial.ttf";
 	size = size_temp = 25;
@@ -177,3 +208,8 @@ void Text::CleanTexture()
 		SDL_DestroyTexture(texture);
 	texture = NULL;
 }
+
+void Text::Start(){}
+void Text::Update(){}
+void Text::GeometryBack(){}
+void Text::GeometryFront(){}
